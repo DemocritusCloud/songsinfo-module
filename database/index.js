@@ -1,33 +1,34 @@
 const Sequelize = require('sequelize');
 
 // setup connection
-const db = new Sequelize('democloud', 'root', '', {
+const db = new Sequelize('songinfo', 'root', 'ht', {
   host: 'localhost',
-  dialect: 'mysql'
+  dialect: 'postgres'
 });
 
 // test connection
 db.authenticate()
   .then(() => {
-    console.log('db connection success!');
+    console.log('Successfully connected to database.');
   })
   .catch(err => {
-    console.log('NO db connection!', err);
+    console.log('Database connection was NOT succesful.', err);
   });
 
 // songsinfo table schema
 const SongsInfo = db.define(
-  'SongsInfo',
+  'songlist',
   {
     plays: Sequelize.INTEGER,
     likes: Sequelize.INTEGER,
     reposts: Sequelize.INTEGER,
     description: Sequelize.STRING,
     artist: Sequelize.STRING,
-    artist_followers: Sequelize.INTEGER,
-    artist_tracks: Sequelize.INTEGER
+    artistFollowers: Sequelize.INTEGER,
+    artistTracks: Sequelize.INTEGER
   },
   {
+    freezeTableName: true,
     timestamps: false
   }
 );

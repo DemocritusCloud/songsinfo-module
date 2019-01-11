@@ -39,6 +39,7 @@ rndGen('artistTracks', rndArtTra);
 rndGen('descriptions', rndDesc);
 rndGen('artists', rndArt);
 
+
 for (let i = 0; i <= 99; i++) {
   db.SongsInfo.create({
     plays: rndPlays[i],
@@ -46,7 +47,7 @@ for (let i = 0; i <= 99; i++) {
     reposts: rndReposts[i],
     description: rndDesc[i],
     artist: rndArt[i],
-    artist_followers: rndArtFol[i],
-    artist_tracks: rndArtTra[i]
+    artistfollowers: rndArtFol[i],
+    artisttracks: rndArtTra[i]
   });
 }
