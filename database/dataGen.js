@@ -7,7 +7,7 @@ const Art = [];
 const ArtFol = [];
 const ArtTra = [];
 
-var numOfData = 10000000;
+var numOfData = 10;
 
 const rndGen = (type, arr) => {
   let rndData;

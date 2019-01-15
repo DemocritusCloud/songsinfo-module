@@ -1,9 +1,10 @@
-const connection = {
-  host: 'localhost',
-  port: 5432,
-  database: 'songinfo',
-  user: 'root',
-  password:'ht'
-};
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/27017')
 
-module.exports = connection;
+var db = mongoose.connection;
+
+db.on('open', () => {
+  console.log('connected');
+})
+
+module.exports = db;
