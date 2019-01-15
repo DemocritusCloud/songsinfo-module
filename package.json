@@ -10,7 +10,7 @@
     "build": "webpack -d --watch",
     "db": "psql -U root songinfo < schema.sql",
     "start": "nodemon server/index.js",
-    "seed": "node database/seed.js"
+    "seed": "node --max-old-space-size=8192 database/seed.js"
   },
   "dependencies": {
     "@babel/core": "^7.2.2",
@@ -19,6 +19,7 @@
     "axios": "^0.18.0",
     "babel-loader": "^8.0.5",
     "babel-preset-react": "^6.24.1",
+    "bluebird": "^3.5.3",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "faker": "^4.1.0",
@@ -26,6 +27,7 @@
     "mysql2": "^1.6.4",
     "nodemon": "^1.18.9",
     "pg": "^7.7.1",
+    "pg-promise": "^8.5.4",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
     "sequelize": "^4.42.0",

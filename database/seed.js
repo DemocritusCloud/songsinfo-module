@@ -1,53 +1,77 @@
-const faker = require('faker');
-const db = require('./index.js');
+const promise = require('bluebird');
+const options = { promiseLib: promise };
+const pgp = require('pg-promise')(options);
+const data = require('./dataGen.js');
 
-const rndPlays = [];
-const rndLikes = [];
-const rndReposts = [];
-const rndDesc = [];
-const rndArt = [];
-const rndArtFol = [];
-const rndArtTra = [];
+const cn = 'postgresql://root:ht@localhost:5432/songinfo';
+const db = pgp(cn);
 
-const rndGen = (type, arr) => {
-  let rndData;
-  for (let i = 0; i <= 99; i++) {
-    if (
-      type === 'plays' ||
-      type === 'likes' ||
-      type === 'reposts' ||
-      type === 'artistFollowers' ||
-      type === 'artistTracks'
-    ) {
-      rndData = faker.random.number();
+
+console.log('Plays', data.Plays.length);
+console.log('Likes', data.Likes.length);
+console.log('Reposts', data.Reposts.length);
+console.log('Desc', data.Desc.length);
+console.log('Art', data.Art.length);
+console.log('ArtFol', data.ArtFol.length);
+console.log('ArtTra', data.ArtTra.length);
+
+const cs = new pgp.helpers.ColumnSet(
+  [
+    'id',
+    'plays',
+    'likes',
+    'reposts',
+    'description',
+    'artist',
+    'artistfollowers',
+    'artisttracks'
+  ],
+  {table: 'songlist'}
+);
+
+
+
+function getNextData(t, pageIndex) {
+  let values;
+  if (pageIndex < 1000) {
+    values = [];
+    for (let i = 1; i <= 10000; i++) {
+      const index = pageIndex * 10000 + i;
+      console.log('index is', index);
+      values.push({
+        id: index,
+        plays: data.Plays[index-1],
+        likes: data.Likes[index-1],
+        reposts: data.Reposts[index-1],
+        description: data.Desc[index-1],
+        artist: data.Art[index-1],
+        artistfollowers: data.ArtFol[index-1],
+        artisttracks: data.ArtTra[index-1],
+      });
     }
-    if (type === 'descriptions') {
-      rndData = faker.lorem.sentence();
-    }
-    if (type === 'artists') {
-      rndData = faker.internet.userName();
-    }
-    arr.push(rndData);
   }
-};
-
-rndGen('plays', rndPlays);
-rndGen('likes', rndLikes);
-rndGen('reposts', rndReposts);
-rndGen('artistFollowers', rndArtFol);
-rndGen('artistTracks', rndArtTra);
-rndGen('descriptions', rndDesc);
-rndGen('artists', rndArt);
-
-
-for (let i = 0; i <= 99; i++) {
-  db.SongsInfo.create({
-    plays: rndPlays[i],
-    likes: rndLikes[i],
-    reposts: rndReposts[i],
-    description: rndDesc[i],
-    artist: rndArt[i],
-    artistfollowers: rndArtFol[i],
-    artisttracks: rndArtTra[i]
-  });
+  console.log('values', values);
+  return Promise.resolve(values);
 }
+
+console.time('Seeding took');
+
+console.log('db is', db);
+db.tx('massive-insert', t => {
+  return t.sequence(index => {
+    return getNextData(t, index)
+      .then(result => {
+        if (result) {
+          const insert = pgp.helpers.insert(result, cs);
+          return t.none(insert);
+        }
+      });
+  });
+})
+.then(() => {
+  console.timeEnd('Seeding took');
+  console.log('Finished');
+})
+.catch(error => {
+  throw error;
+})

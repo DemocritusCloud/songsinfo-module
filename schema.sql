@@ -1,7 +1,7 @@
 \connect songinfo
 
 create table songlist (
-  id SERIAL,
+  id integer,
   plays integer,
   likes integer,
   reposts integer,
@@ -10,3 +10,5 @@ create table songlist (
   artistFollowers integer,
   artistTracks integer
 );
+
+-- psql -U root songinfo <schema.sql
