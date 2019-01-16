@@ -7,7 +7,7 @@ const Art = [];
 const ArtFol = [];
 const ArtTra = [];
 
-var numOfData = 10;
+var numOfData = 5000000;
 
 const rndGen = (type, arr) => {
   let rndData;
@@ -38,6 +38,8 @@ rndGen('artistFollowers', ArtFol);
 rndGen('artistTracks', ArtTra);
 rndGen('descriptions', Desc);
 rndGen('artists', Art);
+
+console.log('Finished generating data');
 
 module.exports = {
   Plays,

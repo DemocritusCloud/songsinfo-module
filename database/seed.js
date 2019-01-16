@@ -38,26 +38,34 @@ var songListSchema = new mongoose.Schema({
 
 // Compile schema into a model
 var songList = mongoose.model('songList', songListSchema, 'songList');
+var chunkSize = 10000;
+var numOfChunks = 500;
 
+console.time('Seeding took')
 const insertData = (prevIndex) => {
-  var songData = [];
-  for(var i= 1; i <= 10000; i++) {
-    var index = prevIndex * 10000 + i;
-    songData.push({
-      id: index,
-      plays: data.Plays[index-1],
-      likes: data.Likes[index-1],
-      reposts: data.Reposts[index-1],
-      description: data.Desc[index-1],
-      artist: data.Art[index-1],
-      artistfollowers: data.ArtFol[index-1],
-      artisttracks: data.ArtTra[index-1],
+  console.log('prevIndex', prevIndex);
+  if (prevIndex < numOfChunks) {
+    var songData = [];
+    for(var i= 1; i <= chunkSize; i++) {
+      var index = prevIndex * chunkSize + i;
+      songData.push({
+        id: index,
+        plays: data.Plays[index-1],
+        likes: data.Likes[index-1],
+        reposts: data.Reposts[index-1],
+        description: data.Desc[index-1],
+        artist: data.Art[index-1],
+        artistfollowers: data.ArtFol[index-1],
+        artisttracks: data.ArtTra[index-1],
+      });
+    }
+    console.log('Number of chunks added:', prevIndex);
+    songList.insertMany(songData, () => {
+      insertData(++prevIndex);
     });
+    return;
   }
-
-  return new Promise(function(resolve, reject) songList.insertMany(songData)));
 }
 
 insertData(0);
-
-
+console.timeEnd('Seeding took');
